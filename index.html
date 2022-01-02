@@ -8,12 +8,30 @@
 	<style>
 		canvas{
 			border: 2px solid hotpink;
+			box-sizing: border-box;
+		}
+
+		main {
+			position: absolute;
+			/*background-color: limegreen;*/
+			width: 1024px;
+			height: 768px;
+			display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
+
+		body {
+			margin: 0px;
+			padding: 0px;
 		}
 	</style>
 
-	
-	<canvas width="800" height="600"></canvas>
+	<main>
+		<canvas width="800" height="600"></canvas>
+	</main>
 
+	<script src="fitToScreen.js"></script>
 	<script src="script.js"></script>
 
 </body>

@@ -1,5 +1,13 @@
 var stage;
 
+var colorList = [
+	'crimson',
+	'limegreen',
+	'hotpink',
+	'navy',
+	'gold',
+	'sienna'
+];
 
 /* points downwards */
 class Starlet extends createjs.Shape {
@@ -27,6 +35,10 @@ class Starlet extends createjs.Shape {
 		this.graphics.f(color).mt(0,0).lt(w/2,h1).lt(0,h).lt(-w/2,h1).lt(0,0).f();
 	}
 
+	recolor() {
+		this.drawMe(colorList[random(colorList.length)]);
+	}
+
 	detach() {
 		this.parent.removeChild(this);
 		stage.addChild(this);
@@ -51,11 +63,17 @@ class Star extends createjs.Container {
 	}
 
 	drawMe(color='black') {
+		let rc = Star.getRandomColor();
 		Array.from({length:5},(o,i)=> {
-			let s = new Starlet(this.x,this.y, 0, color);
+			let s = new Starlet(this.x,this.y, 0, rc);
 			s.rotation = i*360/5;
 			this.addChild(s);
 		})
+	}
+
+	static getRandomColor() {
+		var i = Math.floor(Math.random() * colorList.length);
+		return colorList[i];
 	}
 }
 
@@ -127,6 +145,12 @@ function makeE(x,y) {
 	return res;
 }
 
+function makeF(x,y) {
+	var res = makeE(x,y);
+	res.children.pop();
+	return res;
+}
+
 function makeI(x,y) {
 	var res =  makeStarletContainer(x,y,[[Starlet.w,0,0]]);
 	res.children[0].scaleY = 2;
@@ -175,8 +199,57 @@ function makeM(x,y) {
 	return res;
 }
 
+
+function makeW(x,y) {
+	var res = makeM(x,y);
+	res.regY = -2*Starlet.h;
+	res.children.forEach((s,i)=>{
+		s.scaleY *= -1;
+		s.rotation *= -1;
+		return s;
+	});
+	return res;
+}
+
+function makeO(x,y) {
+	return make0(x,y);
+}
+
+function makeU(x,y) {
+	var res = makeO(x,y);
+	res.removeChild(res.children[0]);
+	return res;
+}
+
+function makeL(x,y) {
+	var res = makeStarletContainer(x,y,[[0,0,0],[0,Starlet.h,0],[0,2*Starlet.h,-90]]);
+	res.setBounds(0,0,Starlet.h,Starlet.h*2);
+	return res;
+}
+
+function makeN(x,y) {
+	var res = makeStarletContainer(x,y,[[0,0,0],[0,0,-30],[Starlet.h , 2*Starlet.h, 180]]);
+	res.children.forEach((s)=>{
+		s.scaleY = 2;
+	});
+	res.setBounds(0,0,Starlet.h,2*Starlet.h)
+	return res;
+}
+
 function makeS(x,y) {
 	var res = makeStarletContainer(x,y,[[0,0,-90],[0,0,0],[0,Starlet.h,-90],[Starlet.h,Starlet.h,0],[Starlet.h,Starlet.h*2,90]]);
+	res.setBounds(0,0,Starlet.h,Starlet.h*2);
+	return res;
+}
+
+function make2(x,y) {
+	var res = makeStarletContainer(x,y,[[0,0,-90],[Starlet.h,0,0],[Starlet.h,Starlet.h,90],[0,Starlet.h,0],[0,Starlet.h*2, -90]]);
+	res.setBounds(0,0,Starlet.h, Starlet.h*2);
+	return res;
+}
+
+function make0(x,y) {
+	var res = makeStarletContainer(x,y,[[0,0,-90],[Starlet.h,Starlet.h,180],[Starlet.h,Starlet.h,0],[0,Starlet.h,180],[0,Starlet.h,0],[Starlet.h,2*Starlet.h, 90]]);
 	res.setBounds(0,0,Starlet.h,Starlet.h*2);
 	return res;
 }
@@ -186,6 +259,8 @@ function makeP(x,y) {
 	r.removeChild(r.children.pop());
 	return r;	
 }
+
+
 
 function makeB(x,y) {
 	var p = makeP(x,y);
@@ -230,7 +305,7 @@ function prepareWord(word,i) {
 	var res = [];
 	var occupiedWidth = 0;
 	word.split('').forEach((lett,j)=> {
-		let c = window['make'+lett.toUpperCase()](occupiedWidth,i*150);
+		let c = window['make'+lett.toUpperCase()](occupiedWidth,i*150 + 30);
 		// stage.addChild(c);
 		let bounds = c.getBounds();
 		occupiedWidth += bounds?.width + 30; 
@@ -247,8 +322,8 @@ function prepareWord(word,i) {
 }
 
 
-function prepareMessage() {
-	var msg = 'Happy Teachers Day Vijaya Miss';
+function prepareMessage(msg) {
+	// var msg = 'Happy Teachers Day Vijaya Miss';
 	let res = [];
 	msg.split(' ').forEach((w,i)=>{
 		res = res.concat(prepareWord(w,i));
@@ -265,6 +340,43 @@ function prepareMessage() {
 		res.push(wordContainer);*/
 	});
 	return res;
+}
+
+function permutate(arr) {
+	var res = arr.slice();
+	for(var k = 0; k < 230; k++) {
+		var i = Math.floor(Math.random() * arr.length);
+		var j = Math.floor(Math.random() * arr.length);
+		var tmp = res[i];
+		res[i] = res[j];
+		res[j] = tmp;
+
+	}
+	return res;
+}
+
+function reinsertMessage(starStarletList,messageStarletList) {
+	var targetList = permutate(starStarletList.slice(0,messageStarletList.length));
+	starStarletList.forEach((s,i)=>{
+		if(i < messageStarletList.length) {
+			var target = targetList[i];
+			var path = Array.from({length:4}, ()=>{
+				return [Math.floor(Math.random()*stage.canvas.width), Math.floor(Math.random()*stage.canvas.height)];
+			}).concat([target.x,target.y]).flat();		
+			var waitingTime = 1000;
+			createjs.Tween.get(s).wait(waitingTime).call(()=>{
+				s.detach();
+			}).to({guide:{path}, rotation: target.rotation, scaleY:target.scaleY},2000).call(()=>{
+				if(i==messageStarletList.length-1) {
+					reinsertMessage(starStarletList, messageStarletList);
+				}
+			});
+		}
+	});
+}
+
+function random(n) {
+	return Math.floor(n * Math.random());
 }
 
 
@@ -286,14 +398,18 @@ function findDescendantsByName(ancestor,name) {
 	return res;
 }
 
+
+
+
 window.addEventListener('load',()=>{
 	createjs.MotionGuidePlugin.install();
 	var canvas = document.querySelector('canvas');
 
+
 	stage = new createjs.Stage(canvas);
 
 
-	var messageStarletList = prepareMessage().flatMap((cont,i)=> cont.children );
+	var messageStarletList = prepareMessage('Happy New Year Daniel').flatMap((cont,i)=> cont.children );
 
 
 	var starStarletList = [];
@@ -301,8 +417,7 @@ window.addEventListener('load',()=>{
 
 	for(let i = 0; i < (nbStars/5); i++) {
 		for(let j = 0; j < 5; j++) {
-			console.log(i + ' ' + j);
-			let s = new Star(i*80 + 50 ,j*120 + 50, 'palegreen');
+			let s = new Star(i*80 + 50 ,j*120 + 50, 'crimson');
 			starStarletList = starStarletList.concat(findDescendantsByName(s,'Starlet'));
 			stage.addChild(s);
 			s.x += (canvas.width - Starlet.h*2*5)/2;
@@ -327,8 +442,17 @@ window.addEventListener('load',()=>{
 		var waitingTime = 18 * s.y;
 		createjs.Tween.get(s).wait(waitingTime).call(()=>{
 			s.detach();
-		}).to({guide:{path}, rotation, scaleY},2000);
+		}).to({guide:{path}, rotation, scaleY},2000).call(()=>{
+			if(i==starStarletList.length-1) {
+				reinsertMessage(starStarletList,messageStarletList);
+			}
+		});
 	});
+
+
+	stage.on('click',(evt)=>{
+		console.log(evt.target);
+	})
 
 	stage.scale = 0.84
 
