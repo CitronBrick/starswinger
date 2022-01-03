@@ -5,7 +5,6 @@ var colorList = [
 	'#32CD32',//'limegreen',
 	'#FF69B4',//'hotpink',
 	'000080',//'navy',
-	'#FFD700',//'gold',
 	'#D2691E'//'chocolate'
 ];
 
@@ -423,6 +422,15 @@ function findDescendantsByName(ancestor,name) {
 }
 
 
+function cullMessage() {
+	var usp = new URLSearchParams(window.location.search);
+	var msg =  usp.get('msg');
+	if(!msg) {
+		return  'Happy New Year 2022';;
+	} else {
+		return atob(msg);
+	}
+}
 
 
 window.addEventListener('load',()=>{
@@ -433,8 +441,10 @@ window.addEventListener('load',()=>{
 
 	stage = new createjs.Stage(canvas);
 
+	var msg = cullMessage();
 
-	var messageStarletList = prepareMessage('Happy New Year 2022 everybody').flatMap((cont,i)=> cont.children );
+
+	var messageStarletList = prepareMessage(msg).flatMap((cont,i)=> cont.children );
 
 
 	var starStarletList = [];
