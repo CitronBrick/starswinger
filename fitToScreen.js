@@ -6,7 +6,6 @@ var appWidth;
 var appHeight;
 var apps;
 
-//$(document).ready(function() {
 window.addEventListener("load", function () {
     window.onresize = function () {
         resizeApp();
@@ -21,8 +20,6 @@ function resizeApp() {
     // var appWidth = 800;
     // var appHeight = 600;
 
-    //winWidth = $(window).width(); //retrieve current window width
-    //winHeight = $(window).height(); //retrieve current window height
     winWidth = document.documentElement.clientWidth;
     winHeight = document.documentElement.clientHeight;
 
@@ -31,7 +28,7 @@ function resizeApp() {
     scale = ws < hs ? ws : hs;
 
     var ua = window.navigator.userAgent;
-    var msie = ua.indexOf("MSIE ");
+    var msie = ua.includes("MSIE ");
     if (msie > 0) {
         //$('#main').css('zoom',scale);
         cont.style.msTransformOrigin = "0 0";
@@ -54,30 +51,4 @@ function resizeApp() {
     }
 }
 
-function getBrowserInfo() {
-    var uagent = navigator.userAgent.toLowerCase();
-    var _browser = {};
 
-    _browser.chrome =
-        /webkit/.test(uagent) && /chrome/.test(uagent) && !/edge/.test(uagent);
-    _browser.firefox = /mozilla/.test(uagent) && /firefox/.test(uagent);
-    _browser.msie =
-        /msie/.test(uagent) || /trident/.test(uagent) || /edge/.test(uagent);
-    _browser.safari =
-        /safari/.test(uagent) &&
-        /applewebkit/.test(uagent) &&
-        !/chrome/.test(uagent);
-    _browser.opr =
-        /mozilla/.test(uagent) &&
-        /applewebkit/.test(uagent) &&
-        /chrome/.test(uagent) &&
-        /safari/.test(uagent) &&
-        /opr/.test(uagent);
-
-    return _browser;
-}
-
-function isMobileDevice() {
-    var ua = navigator.userAgent;
-    return /iPad|iPhone OS|Android|Mobi/i.test(ua);
-}

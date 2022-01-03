@@ -1,12 +1,12 @@
 var stage;
 
 var colorList = [
-	'crimson',
-	'limegreen',
-	'hotpink',
-	'navy',
-	'gold',
-	'sienna'
+	'#DC143C',//'crimson',
+	'#32CD32',//'limegreen',
+	'#FF69B4',//'hotpink',
+	'000080',//'navy',
+	'#FFD700',//'gold',
+	'#D2691E'//'chocolate'
 ];
 
 /* points downwards */
@@ -32,7 +32,8 @@ class Starlet extends createjs.Shape {
 		let h = Starlet.h;
 
 		// color = this.rotation?'gold':'crimson';
-		this.graphics.f(color).mt(0,0).lt(w/2,h1).lt(0,h).lt(-w/2,h1).lt(0,0).f();
+		this.cmd = this.graphics.f(color).command;
+		this.graphics.mt(0,0).lt(w/2,h1).lt(0,h).lt(-w/2,h1).lt(0,0).f();
 	}
 
 	recolor() {
@@ -40,9 +41,12 @@ class Starlet extends createjs.Shape {
 	}
 
 	detach() {
+		var {x,y} = this.parent.localToGlobal(this.x,this.y);
 		this.parent.removeChild(this);
 		stage.addChild(this);
+		this.init = {x, y, rotation: this.rotation, scaleY: this.scaleY, color: this.cmd.style};
 		this.detached = true;
+
 	}	
 
 	handlePressMove(evt) {
@@ -72,7 +76,7 @@ class Star extends createjs.Container {
 	}
 
 	static getRandomColor() {
-		var i = Math.floor(Math.random() * colorList.length);
+		var i = random(colorList.length);
 		return colorList[i];
 	}
 }
@@ -89,7 +93,7 @@ class Star extends createjs.Container {
 
 function  makeH(x,y) {
 	var res = makeStarletContainer(x,y,[[0,Starlet.h, 180],[0,Starlet.h,0],[0,Starlet.h,-90],[50,Starlet.h,180],[50,Starlet.h,0]]);
-	res.setBounds(0,0,Starlet.h+Starlet.w,2*Starlet.h);
+	res.setBounds(0,0,Starlet.h,2*Starlet.h);
 	return res;
 }
 
@@ -179,7 +183,7 @@ function makeY(x,y) {
 function makeV(x,y) {
 	var res = makeStarletContainer(x,y,[[0,0,-30],[Starlet.w*3,0, 30]]);
 	res.children.forEach(s=>s.scaleY=2);
-	res.setBounds(0,0,60,Starlet.h*2);
+	res.setBounds(0,0,80,Starlet.h*2);
 	return res;
 }
 
@@ -363,17 +367,37 @@ function reinsertMessage(starStarletList,messageStarletList) {
 			var path = Array.from({length:4}, ()=>{
 				return [Math.floor(Math.random()*stage.canvas.width), Math.floor(Math.random()*stage.canvas.height)];
 			}).concat([target.x,target.y]).flat();		
-			var waitingTime = 1000;
+			var waitingTime = 1500;
+			createjs.Tween.get(s.cmd).wait(waitingTime).to({style: Star.getRandomColor()},2000);
 			createjs.Tween.get(s).wait(waitingTime).call(()=>{
 				s.detach();
 			}).to({guide:{path}, rotation: target.rotation, scaleY:target.scaleY},2000).call(()=>{
 				if(i==messageStarletList.length-1) {
+					// comeBackToStarPositions(starStarletList, messageStarletList);
 					reinsertMessage(starStarletList, messageStarletList);
 				}
 			});
 		}
 	});
 }
+
+/*function comeBackToStarPositions(starStarletList, messageStarletList) {
+	starStarletList.forEach((s,i)=>{
+		var path = Array.from({length:4}, ()=>{
+			return [Math.floor(Math.random()*stage.canvas.width), Math.floor(Math.random()*stage.canvas.height)];
+		}).concat([s.init.x,s.init.y]).flat();		
+		var waitingTime = 1000;
+		createjs.Tween.get(s.cmd).wait(waitingTime).to({style: Star.getRandomColor()},2000);
+		createjs.Tween.get(s).wait(waitingTime).call(()=>{
+			s.detach();
+		}).to({guide:{path}, rotation: s.init.rotation, scaleY:s.init.scaleY},2000).call(()=>{
+			if(i==messageStarletList.length-1) {
+				reinsertMessage(starStarletList, messageStarletList);
+			}
+		});
+	})
+}*/
+
 
 function random(n) {
 	return Math.floor(n * Math.random());
@@ -403,13 +427,14 @@ function findDescendantsByName(ancestor,name) {
 
 window.addEventListener('load',()=>{
 	createjs.MotionGuidePlugin.install();
+	createjs.ColorPlugin.install('rgb');
 	var canvas = document.querySelector('canvas');
 
 
 	stage = new createjs.Stage(canvas);
 
 
-	var messageStarletList = prepareMessage('Happy New Year Daniel').flatMap((cont,i)=> cont.children );
+	var messageStarletList = prepareMessage('Happy New Year 2022 everybody').flatMap((cont,i)=> cont.children );
 
 
 	var starStarletList = [];
@@ -426,6 +451,7 @@ window.addEventListener('load',()=>{
 
 	starStarletList.forEach((s,i)=> {
 		var mp, rotation = 0, scaleY = 1;
+		// s.init = {x: s.x, y: s.y, rotation: s.rotation, scaleY: s.scaleY, color: s.cmd.style};
 		if(i < messageStarletList.length) {
 			mp = messageStarletList[i].localToGlobal(0, 0);
 			rotation = messageStarletList[i].rotation;
@@ -454,7 +480,7 @@ window.addEventListener('load',()=>{
 		console.log(evt.target);
 	})
 
-	stage.scale = 0.84
+	stage.scale = 0.79;
 
 
 	/*stage.addChild(makeH(100,100));
