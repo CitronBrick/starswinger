@@ -6,7 +6,9 @@ var colorList = [
 	'#FF69B4',//'hotpink',
 	'#00BFFF',//'deepskyblue',
 	'#50C878', //emerald
-	'#D2691E'//'chocolate'
+	'#D2691E',//'chocolate'
+	// '#FFFF00' //Yellow'
+	'#FFD700'
 ];
 
 /* points downwards */
@@ -449,6 +451,16 @@ window.addEventListener('load',()=>{
 
 
 	stage = new createjs.Stage(canvas);
+	stage.scale = 0.79;
+
+	var fond = new createjs.Shape();
+	// console.log()
+	fond.set({x:0,y:0});
+	console.log(stage.canvas.width,stage.canvas.height);
+	console.log(canvas.width,canvas.height);
+	fond.graphics.f('HoneyDew').dr(0,0,stage.canvas.width/stage.scale, stage.canvas.height/stage.scale).ef();
+	// console.log(fond.getBounds());
+	stage.addChild(fond);
 
 	var msg = cullMessage();
 
@@ -461,7 +473,8 @@ window.addEventListener('load',()=>{
 
 	for(let i = 0; i < (nbStars/5); i++) {
 		for(let j = 0; j < 5; j++) {
-			let s = new Star(i*80 + 50 ,j*120 + 50, 'crimson');
+			let offset = 80;
+			let s = new Star(i*80 + offset ,j*120 + offset, 'crimson');
 			starStarletList = starStarletList.concat(findDescendantsByName(s,'Starlet'));
 			stage.addChild(s);
 			s.x += (canvas.width - Starlet.h*2*5)/2;
@@ -499,7 +512,6 @@ window.addEventListener('load',()=>{
 		console.log(evt.target);
 	})
 
-	stage.scale = 0.79;
 
 
 	/*stage.addChild(makeH(100,100));
