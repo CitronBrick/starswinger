@@ -15,10 +15,10 @@ window.addEventListener("load", function () {
 
 function resizeApp() {
     var winHeight, winWidth;
-    var appWidth = 1024;
-    var appHeight = 768;
-    // var appWidth = 800;
-    // var appHeight = 600;
+    // var appWidth = 1024;
+    // var appHeight = 768;
+    var appWidth = 800;
+    var appHeight = 600;
 
     winWidth = document.documentElement.clientWidth;
     winHeight = document.documentElement.clientHeight;

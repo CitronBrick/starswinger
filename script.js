@@ -4,7 +4,8 @@ var colorList = [
 	'#DC143C',//'crimson',
 	'#32CD32',//'limegreen',
 	'#FF69B4',//'hotpink',
-	'000080',//'navy',
+	'#00BFFF',//'deepskyblue',
+	'#50C878', //emerald
 	'#D2691E'//'chocolate'
 ];
 
@@ -239,6 +240,10 @@ function makeN(x,y) {
 	return res;
 }
 
+function makeDash(x,y) {
+	var res =  makeStarletContainer()
+}
+
 function makeS(x,y) {
 	var res = makeStarletContainer(x,y,[[0,0,-90],[0,0,0],[0,Starlet.h,-90],[Starlet.h,Starlet.h,0],[Starlet.h,Starlet.h*2,90]]);
 	res.setBounds(0,0,Starlet.h,Starlet.h*2);
@@ -293,7 +298,7 @@ class Word extends createjs.Container {
 		super();
 		let occupiedWidth = 0;
 		w.split('').forEach((lett,i)=> {
-			let c = window['make'+lett.toUpperCase()](occupiedWidth,i*150);
+			let c = this.makeLetter(lett);
 			// stage.addChild(c);
 			let bounds = c.getBounds();
 			occupiedWidth += bounds?.width + 30; 
@@ -301,6 +306,10 @@ class Word extends createjs.Container {
 			this.addChild(c);
 		});
 		this.set({x: stage.canvas.width/2 - occupiedWidth/2, y});
+	}
+
+	makeLetter() {
+		 return window['make'+lett.toUpperCase()](occupiedWidth,i*150);
 	}
 }
 
