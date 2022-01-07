@@ -371,13 +371,15 @@ function permutate(arr) {
 
 function reinsertMessage(starStarletList,messageStarletList) {
 	var targetList = permutate(starStarletList.slice(0,messageStarletList.length));
+	var waitingTime = 1500;
 	starStarletList.forEach((s,i)=>{
 		if(i < messageStarletList.length) {
 			var target = targetList[i];
-			var path = Array.from({length:4}, ()=>{
+			var path = Array.from({length:3}, ()=>{
 				return [Math.floor(Math.random()*stage.canvas.width), Math.floor(Math.random()*stage.canvas.height)];
 			}).concat([target.x,target.y]).flat();		
-			var waitingTime = 1500;
+			path = [s.x,s.y].concat(path);
+
 			createjs.Tween.get(s.cmd).wait(waitingTime).to({style: Star.getRandomColor()},2000);
 			createjs.Tween.get(s).wait(waitingTime).call(()=>{
 				s.detach();
@@ -493,9 +495,13 @@ window.addEventListener('load',()=>{
 		}
 
 		// creation of random path for Starlet terminating with destination
-		var path = Array.from({length:4}, ()=>{
+		var path = Array.from({length:5}, ()=>{
 			return [Math.floor(Math.random()*stage.canvas.width), Math.floor(Math.random()*stage.canvas.height)];
 		}).concat([mp.x,mp.y]).flat();
+
+		// console.log(s.parent);
+		var start = s.parent.localToGlobal(s.x,s.y); 
+		path = [start.x,start.y].concat(path);
 
 		var waitingTime = 18 * s.y;
 		createjs.Tween.get(s).wait(waitingTime).call(()=>{
